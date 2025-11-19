@@ -11,7 +11,7 @@ const servicesRoutes = require("./routes/services.routes");
 const contactRoutes = require("./routes/contact.routes");
 const adminRoutes = require("./routes/admin.routes");
 const orderRoutes = require("./routes/orderRoutes"); // Orders route
-const newsletterRoutes = require("./routes/newsletter.routes"); // ✅ Newsletter route
+const newsletterRoutes = require("./routes/newsletter.routes"); // Newsletter route
 
 // Error handlers
 const { errorHandler, notFound } = require("./middlewares/errorHandler");
@@ -22,7 +22,6 @@ const app = express();
 // 🛡️ Security & Performance Middleware
 // ------------------------
 app.use(helmet()); // Adds secure HTTP headers
-app.use(cors({ origin: "*", credentials: true })); // Allow all origins
 app.use(compression()); // Gzip compression for performance
 app.use(morgan("dev")); // Request logging
 
@@ -33,6 +32,33 @@ app.use(
     windowMs: 10 * 60 * 1000, // 10 minutes
     max: 500, // limit each IP to 500 requests per windowMs
     message: "Too many requests from this IP, please try again later.",
+  })
+);
+
+// ------------------------
+// 🌐 CORS Configuration
+// ------------------------
+
+// Read allowed origins from environment variable (comma-separated if multiple)
+const allowedOrigins = process.env.ALLOWED_ORIGINS
+  ? process.env.ALLOWED_ORIGINS.split(",").map(origin => origin.trim())
+  : [];
+
+app.use(
+  cors({
+    origin: function (origin, callback) {
+      // Allow requests with no origin (like mobile apps or curl)
+      if (!origin) return callback(null, true);
+      if (allowedOrigins.includes(origin)) {
+        return callback(null, true);
+      } else {
+        return callback(
+          new Error("Not allowed by CORS: " + origin),
+          false
+        );
+      }
+    },
+    credentials: true,
   })
 );
 
@@ -50,7 +76,7 @@ app.use("/api/products", productsRoutes);
 app.use("/api/services", servicesRoutes);
 app.use("/api/contact", contactRoutes);
 app.use("/api/orders", orderRoutes); // Orders route
-app.use("/api/newsletter", newsletterRoutes); // ✅ Newsletter route
+app.use("/api/newsletter", newsletterRoutes); // Newsletter route
 
 // 💚 Health Check
 app.get("/", (req, res) => {
