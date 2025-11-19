@@ -1,0 +1,31 @@
+# Global
+node_modules/
+.env
+.env.*
+*.log
+dist/
+build/
+
+# OS files
+.DS_Store
+
+# Frontend (React / Vite / Next)
+client/node_modules/
+client/dist/
+client/build/
+client/.next/
+client/.vercel/
+client/.sass-cache/
+client/.cache/
+
+# Backend (Express)
+server/node_modules/
+server/dist/
+server/tmp/
+server/.env
+server/.env.*
+server/logs/
+
+# Editor settings
+.vscode/
+.idea/
