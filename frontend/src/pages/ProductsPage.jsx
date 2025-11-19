@@ -1,8 +1,7 @@
 import { useEffect, useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import ProductCard from "../components/products/productCard";
-import api from "../utils/api";
-import { useCart } from "../context/CartContext"; // ✅ Import your Cart context
+import ProductCard from "../components/products/ProductCard";
+import { useCart } from "../context/CartContext"; // ✅ Cart context
 
 const ProductsPage = () => {
   const [products, setProducts] = useState([]);
@@ -13,7 +12,7 @@ const ProductsPage = () => {
 
   const { addToCart } = useCart();
 
-  // 🌄 5 HERO IMAGES (Put them in public/assets/images/)
+  // 🌄 HERO IMAGES
   const heroImages = [
     "/assets/images/products/products-hero.jpg",
     "/assets/images/products/products-hero2.jpg",
@@ -24,16 +23,15 @@ const ProductsPage = () => {
 
   const [currentHero, setCurrentHero] = useState(0);
 
-  // ⏳ Auto-change hero image every 5 seconds
+  // ⏳ Auto-change hero image
   useEffect(() => {
     const interval = setInterval(() => {
       setCurrentHero((prev) => (prev + 1) % heroImages.length);
     }, 5000);
-
     return () => clearInterval(interval);
   }, []);
 
-  // Categories list
+  // Categories
   const categories = [
     "All",
     "Electric Vehicles",
@@ -43,15 +41,18 @@ const ProductsPage = () => {
     "Accessories & Parts",
   ];
 
-  // Fetch products
+  // 🌐 Fetch products from backend
   useEffect(() => {
     const fetchProducts = async () => {
       try {
-        const res = await api.get("/products");
-        const data = Array.isArray(res.data)
-          ? res.data
-          : res.data.products || [];
-        setProducts(data);
+        const res = await fetch(
+          `${import.meta.env.VITE_API_URI}/api/products`
+        );
+        const data = await res.json();
+        const productsData = Array.isArray(data)
+          ? data
+          : data.products || [];
+        setProducts(productsData);
       } catch (err) {
         console.error("❌ Failed to fetch products:", err);
         setProducts([]);
@@ -62,7 +63,7 @@ const ProductsPage = () => {
     fetchProducts();
   }, []);
 
-  // Filter logic
+  // Filter products
   const filteredProducts = products.filter((p) => {
     const matchesCategory =
       category === "All" ||
@@ -75,8 +76,7 @@ const ProductsPage = () => {
 
   return (
     <div className="bg-[#79ccea] dark:bg-gray-900 min-h-screen transition-colors duration-300">
-
-      {/* 🌄 HERO SECTION WITH AUTO-CHANGING IMAGES */}
+      {/* 🌄 HERO */}
       <div className="relative w-full h-72 md:h-96 overflow-hidden">
         <AnimatePresence mode="wait">
           <motion.img

@@ -2,6 +2,7 @@
 import { motion } from "framer-motion";
 import { X } from "lucide-react";
 import { useState } from "react";
+import axios from "axios";
 
 const CheckoutFormModal = ({ cartItems, total, clearCart, onClose }) => {
   const [loading, setLoading] = useState(false);
@@ -17,6 +18,9 @@ const CheckoutFormModal = ({ cartItems, total, clearCart, onClose }) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
   };
 
+  // Use VITE_API_URI environment variable for backend
+  const apiUrl = `${import.meta.env.VITE_API_URI}/api/orders`;
+
   const handleCheckoutSubmit = async (e) => {
     e.preventDefault();
 
@@ -28,37 +32,25 @@ const CheckoutFormModal = ({ cartItems, total, clearCart, onClose }) => {
     setLoading(true);
 
     try {
-      const res = await fetch("http://localhost:5000/api/orders", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          ...formData,   // ✅ Send fields directly
-          items: cartItems.map(item => ({
-            productId: item._id,
-            name: item.name,
-            price: item.price,
-            quantity: item.quantity || 1,
-          })),
-          totalPrice: total,
-        }),
+      const res = await axios.post(apiUrl, {
+        ...formData,
+        items: cartItems.map((item) => ({
+          productId: item._id,
+          name: item.name,
+          price: item.price,
+          quantity: item.quantity || 1,
+        })),
+        totalPrice: total,
       });
 
-      const data = await res.json();
-
-      if (!res.ok) {
-        alert(data.message || "Failed to place order");
-        setLoading(false);
-        return;
-      }
-
-      console.log("Order saved:", data);
       alert("✅ Order successfully placed!");
+      console.log("Order saved:", res.data);
 
-      if (clearCart) clearCart(); // ✅ safely clear cart
+      if (clearCart) clearCart(); // safely clear cart
       onClose();
     } catch (error) {
       console.error(error);
-      alert("❌ Failed to place order");
+      alert(error.response?.data?.message || "❌ Failed to place order");
     } finally {
       setLoading(false);
     }

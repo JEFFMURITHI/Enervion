@@ -1,7 +1,7 @@
 // src/pages/ContactPage.jsx
 import Hero from "../components/hero/Hero";
-import ContactForm from "../components/forms/contactForm";
-import SectionHeader from "../components/common/sectionHeader";
+import ContactForm from "../components/forms/ContactForm"; // ✅ Make sure the filename matches exactly
+import SectionHeader from "../components/common/SectionHeader";
 import { Mail, Phone, MapPin, Facebook, Twitter, Instagram, Linkedin } from "lucide-react";
 import { motion } from "framer-motion";
 
@@ -21,7 +21,7 @@ const ContactPage = () => {
         {/* Contact Form */}
         <div className="bg-[#a1d788] dark:bg-gray-800 p-8 rounded-2xl shadow-md transition-colors duration-500">
           <SectionHeader title="Send Us a Message" subtitle="We respond promptly to all inquiries" />
-          <ContactForm />
+          <ContactForm apiUrl={`${import.meta.env.VITE_API_URI}/api/contact`} />
         </div>
 
         {/* Contact Info (FULLY INTERACTIVE) */}

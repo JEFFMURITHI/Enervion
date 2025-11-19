@@ -3,18 +3,24 @@ import { useState } from "react";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { toast } from "@/components/ui/toast";
-import api from "@/utils/api";
+import axios from "axios";
 
 const NewsletterSignup = () => {
   const [email, setEmail] = useState("");
   const [loading, setLoading] = useState(false);
 
+  // API URL dynamically from environment variable
+  const apiUrl = `${import.meta.env.VITE_API_URI}/api/newsletter`;
+
   const handleSubmit = async (e) => {
     e.preventDefault();
     setLoading(true);
     try {
-      await api.post("/newsletter", { email });
-      toast({ title: "Subscribed!", description: "You have successfully joined our newsletter." });
+      await axios.post(apiUrl, { email });
+      toast({
+        title: "Subscribed!",
+        description: "You have successfully joined our newsletter.",
+      });
       setEmail("");
     } catch (err) {
       toast({
@@ -28,7 +34,10 @@ const NewsletterSignup = () => {
   };
 
   return (
-    <form onSubmit={handleSubmit} className="flex flex-col sm:flex-row gap-4 items-center justify-center">
+    <form
+      onSubmit={handleSubmit}
+      className="flex flex-col sm:flex-row gap-4 items-center justify-center"
+    >
       <Input
         type="email"
         placeholder="Your Email"

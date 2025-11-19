@@ -1,7 +1,6 @@
 import { useEffect, useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import ServiceItem from "../components/services/serviceItem";
-import api from "../utils/api";
+import ServiceItem from "../components/services/ServiceItem";
 import sampleServices from "../data/sampleServices";
 
 const ServicesPage = () => {
@@ -34,14 +33,19 @@ const ServicesPage = () => {
     "Installation & Consultation",
   ];
 
+  // 🌐 Fetch services from backend
   useEffect(() => {
     let isMounted = true;
+
     const fetchServices = async () => {
       try {
-        const res = await api.get("/services");
-        const dbServices = Array.isArray(res.data)
-          ? res.data
-          : res.data.services || [];
+        const res = await fetch(
+          `${import.meta.env.VITE_API_URI}/api/services`
+        );
+        const data = await res.json();
+        const dbServices = Array.isArray(data)
+          ? data
+          : data.services || [];
 
         const merged = [
           ...sampleServices,
