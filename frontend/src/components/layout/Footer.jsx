@@ -1,6 +1,6 @@
 // src/components/layout/Footer.jsx
 import { Link } from "react-router-dom";
-import NewsletterSignup from "../forms/NewsletterSignup";
+import NewsletterSignup from "../forms/newsletterSignup";
 import { Facebook, Twitter, Instagram, Linkedin } from "lucide-react";
 
 const Footer = () => {
