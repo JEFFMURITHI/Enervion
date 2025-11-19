@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import ProductCard from "../components/products/ProductCard";
+import ProductCard from "../components/products/productCard";
 import { useCart } from "../context/CartContext"; // ✅ Cart context
 
 const ProductsPage = () => {

@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import ServiceItem from "../components/services/ServiceItem";
+import ServiceItem from "../components/services/serviceItem";
 import sampleServices from "../data/sampleServices";
 
 const ServicesPage = () => {
