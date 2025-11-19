@@ -1,7 +1,7 @@
 // src/pages/ContactPage.jsx
 import Hero from "../components/hero/Hero";
-import ContactForm from "../components/forms/ContactForm";
-import SectionHeader from "../components/common/SectionHeader";
+import ContactForm from "../components/forms/contactForm";
+import SectionHeader from "../components/common/sectionHeader";
 import { Mail, Phone, MapPin, Facebook, Twitter, Instagram, Linkedin } from "lucide-react";
 import { motion } from "framer-motion";
 
