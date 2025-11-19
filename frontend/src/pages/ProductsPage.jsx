@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import ProductCard from "../components/products/ProductCard";
+import ProductCard from "../components/products/productCard";
 import api from "../utils/api";
 import { useCart } from "../context/CartContext"; // ✅ Import your Cart context
 
