@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import ProductCard from "../components/products/productCard";
-import { useCart } from "../context/CartContext"; // ✅ Cart context
+import { useCart } from "../context/CartContext";
 
 const ProductsPage = () => {
   const [products, setProducts] = useState([]);
@@ -31,7 +31,7 @@ const ProductsPage = () => {
     return () => clearInterval(interval);
   }, []);
 
-  // Categories
+  // Category list
   const categories = [
     "All",
     "Electric Vehicles",
@@ -46,12 +46,22 @@ const ProductsPage = () => {
     const fetchProducts = async () => {
       try {
         const res = await fetch(
-          `${import.meta.env.VITE_API_URI}/api/products`
+          `${import.meta.env.VITE_API_URL}/api/products`,
+          {
+            method: "GET",
+            headers: { "Content-Type": "application/json" },
+          }
         );
+
+        if (!res.ok) {
+          throw new Error(`Server returned status ${res.status}`);
+        }
+
         const data = await res.json();
         const productsData = Array.isArray(data)
           ? data
           : data.products || [];
+
         setProducts(productsData);
       } catch (err) {
         console.error("❌ Failed to fetch products:", err);
@@ -60,6 +70,7 @@ const ProductsPage = () => {
         setLoading(false);
       }
     };
+
     fetchProducts();
   }, []);
 
@@ -68,9 +79,11 @@ const ProductsPage = () => {
     const matchesCategory =
       category === "All" ||
       p.category?.toLowerCase().trim() === category.toLowerCase().trim();
+
     const matchesSearch = p.name
       ?.toLowerCase()
       .includes(searchTerm.toLowerCase());
+
     return matchesCategory && matchesSearch;
   });
 
@@ -107,8 +120,8 @@ const ProductsPage = () => {
           Featured Products
         </h2>
 
-        {/* Search & Category */}
         <div className="flex flex-wrap justify-center items-center gap-4 mb-10">
+          {/* 🔍 Search */}
           <input
             type="text"
             placeholder="Search products..."
@@ -134,7 +147,11 @@ const ProductsPage = () => {
                 <path
                   strokeLinecap="round"
                   strokeLinejoin="round"
-                  d={showDropdown ? "M5 15l7-7 7 7" : "M19 9l-7 7-7-7"}
+                  d={
+                    showDropdown
+                      ? "M5 15l7-7 7 7"
+                      : "M19 9l-7 7-7-7"
+                  }
                 />
               </svg>
             </button>

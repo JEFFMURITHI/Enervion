@@ -21,7 +21,7 @@ const ContactPage = () => {
         {/* Contact Form */}
         <div className="bg-[#a1d788] dark:bg-gray-800 p-8 rounded-2xl shadow-md transition-colors duration-500">
           <SectionHeader title="Send Us a Message" subtitle="We respond promptly to all inquiries" />
-          <ContactForm apiUrl={`${import.meta.env.VITE_API_URI}/api/contact`} />
+          <ContactForm apiUrl={`${import.meta.env.VITE_API_URL}/api/contact`} />
         </div>
 
         {/* Contact Info (FULLY INTERACTIVE) */}

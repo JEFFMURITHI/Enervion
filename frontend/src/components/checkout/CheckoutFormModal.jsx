@@ -2,7 +2,7 @@
 import { motion } from "framer-motion";
 import { X } from "lucide-react";
 import { useState } from "react";
-import axios from "axios";
+import { toast } from "@/components/ui/toast";
 
 const CheckoutFormModal = ({ cartItems, total, clearCart, onClose }) => {
   const [loading, setLoading] = useState(false);
@@ -18,39 +18,61 @@ const CheckoutFormModal = ({ cartItems, total, clearCart, onClose }) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
   };
 
-  // Use VITE_API_URI environment variable for backend
-  const apiUrl = `${import.meta.env.VITE_API_URI}/api/orders`;
-
   const handleCheckoutSubmit = async (e) => {
     e.preventDefault();
 
     if (!cartItems || cartItems.length === 0) {
-      alert("Your cart is empty!");
+      toast({
+        title: "Cart is empty!",
+        description: "Add products to your cart before checkout.",
+        variant: "destructive",
+      });
       return;
     }
 
     setLoading(true);
 
     try {
-      const res = await axios.post(apiUrl, {
-        ...formData,
-        items: cartItems.map((item) => ({
-          productId: item._id,
-          name: item.name,
-          price: item.price,
-          quantity: item.quantity || 1,
-        })),
-        totalPrice: total,
+      const res = await fetch(`${import.meta.env.VITE_API_URL}/api/orders`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          ...formData,
+          items: cartItems.map((item) => ({
+            productId: item._id,
+            name: item.name,
+            price: item.price,
+            quantity: item.quantity || 1,
+          })),
+          totalPrice: total,
+        }),
       });
 
-      alert("✅ Order successfully placed!");
-      console.log("Order saved:", res.data);
+      if (!res.ok) {
+        const errorData = await res.json();
+        throw new Error(errorData.message || `Server returned status ${res.status}`);
+      }
 
-      if (clearCart) clearCart(); // safely clear cart
+      const data = await res.json();
+
+      toast({
+        title: "Order Placed!",
+        description: "✅ Your order has been successfully submitted.",
+      });
+
+      console.log("Order saved:", data);
+
+      if (clearCart) clearCart();
       onClose();
-    } catch (error) {
-      console.error(error);
-      alert(error.response?.data?.message || "❌ Failed to place order");
+    } catch (err) {
+      console.error("❌ Failed to place order:", err);
+      toast({
+        title: "Error",
+        description: err.message || "Failed to place order.",
+        variant: "destructive",
+      });
     } finally {
       setLoading(false);
     }
@@ -71,9 +93,7 @@ const CheckoutFormModal = ({ cartItems, total, clearCart, onClose }) => {
           <X size={22} />
         </button>
 
-        <h2 className="text-2xl font-bold mb-6 text-center">
-          Buyer Information
-        </h2>
+        <h2 className="text-2xl font-bold mb-6 text-center">Buyer Information</h2>
 
         <form onSubmit={handleCheckoutSubmit} className="space-y-4">
           <input

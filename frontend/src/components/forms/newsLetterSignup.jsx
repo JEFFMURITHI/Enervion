@@ -3,29 +3,40 @@ import { useState } from "react";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { toast } from "@/components/ui/toast";
-import axios from "axios";
 
 const NewsletterSignup = () => {
   const [email, setEmail] = useState("");
   const [loading, setLoading] = useState(false);
 
-  // API URL dynamically from environment variable
-  const apiUrl = `${import.meta.env.VITE_API_URI}/api/newsletter`;
-
   const handleSubmit = async (e) => {
     e.preventDefault();
     setLoading(true);
+
     try {
-      await axios.post(apiUrl, { email });
+      const res = await fetch(`${import.meta.env.VITE_API_URL}/api/newsletter`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ email }),
+      });
+
+      if (!res.ok) {
+        const errorData = await res.json();
+        throw new Error(errorData.message || `Server returned status ${res.status}`);
+      }
+
       toast({
         title: "Subscribed!",
         description: "You have successfully joined our newsletter.",
       });
+
       setEmail("");
     } catch (err) {
+      console.error("❌ Newsletter subscription failed:", err);
       toast({
         title: "Error",
-        description: err.response?.data?.message || "Failed to subscribe.",
+        description: err.message || "Failed to subscribe.",
         variant: "destructive",
       });
     } finally {

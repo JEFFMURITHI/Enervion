@@ -4,7 +4,6 @@ import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Button } from "@/components/ui/button";
 import { toast } from "@/components/ui/toast";
-import api from "@/utils/api";
 
 const ContactForm = () => {
   const [formData, setFormData] = useState({ name: "", email: "", message: "" });
@@ -17,14 +16,33 @@ const ContactForm = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     setLoading(true);
+
     try {
-      await api.post("/contact", formData); // Use centralized API
-      toast({ title: "Message sent!", description: "We will contact you soon." });
+      const res = await fetch(`${import.meta.env.VITE_API_URL}/api/contact`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(formData),
+      });
+
+      if (!res.ok) {
+        const errorData = await res.json();
+        throw new Error(errorData.message || `Server returned status ${res.status}`);
+      }
+
+      toast({
+        title: "Message sent!",
+        description: "We will contact you soon.",
+      });
+
       setFormData({ name: "", email: "", message: "" });
     } catch (err) {
+      console.error("❌ Failed to send contact message:", err);
+
       toast({
         title: "Error",
-        description: err.response?.data?.message || "Failed to send message.",
+        description: err.message || "Failed to send message.",
         variant: "destructive",
       });
     } finally {

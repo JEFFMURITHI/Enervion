@@ -40,7 +40,7 @@ const ServicesPage = () => {
     const fetchServices = async () => {
       try {
         const res = await fetch(
-          `${import.meta.env.VITE_API_URI}/api/services`
+          `${import.meta.env.VITE_API_URL}/api/services`
         );
         const data = await res.json();
         const dbServices = Array.isArray(data)
